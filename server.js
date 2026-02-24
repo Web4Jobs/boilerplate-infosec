@@ -8,6 +8,7 @@ var app = express();
 app.disable("x-powered-by");
 var fs = require("fs");
 var path = require("path");
+var execSync = require("child_process").execSync;
 
 app.use(function (req, res, next) {
   res.set({
@@ -59,6 +60,16 @@ app.get("/package.json", function (req, res, next) {
     if (err) return next(err);
     res.type("txt").send(data.toString());
   });
+});
+
+app.get("/user-email", function (req, res) {
+  var email = "";
+  try {
+    email = execSync("git config --get user.email", { encoding: "utf8" }).trim();
+  } catch (e) {
+    email = "";
+  }
+  res.json({ email: email });
 });
 
 app.use(function (req, res, next) {
